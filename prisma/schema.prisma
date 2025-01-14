@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Poli {
+  id                      Int       @id @default(autoincrement())
+  resource_type           String
+  status                  String
+  name                    String
+  description             String
+  mode                    String
+  longitude               Float
+  latitude                Float
+  altitude                Float
+  reference_organization  String
+  physical_type           Json
+  perawats                Perawat[] // Relasi ke Perawat
+  identifiers             Identifier[] // Relasi ke Identifier
+  telecoms                Telecom[] // Relasi ke Telecom
+  log_location_poli       LogLocationPoli[]
+
+  @@map("poli")
+}
+
+model Identifier {
+  id        Int   @id @default(autoincrement())
+  system    String
+  value     String
+  poli_id   Int   //  Foreign Key
+  poli      Poli  @relation(fields: [poli_id], references: [id])
+  
+  @@map("identifiers")
+}
+
+model Telecom {
+  id        Int   @id @default(autoincrement())
+  system    String
+  value     String
+  use       String
+  poli_id   Int   //  Foreign Key
+  poli      Poli  @relation(fields: [poli_id], references: [id])
+  
+  @@map("telecoms")
+}
+
+model Perawat {
+  id        Int    @id @default(autoincrement())
+  name      String
+  poli_id   Int    // Foreign Key
+  poli      Poli   @relation(fields: [poli_id], references: [id]) // Relasi ke Poli
+
+  @@map("perawat")
+}
+
+model LogLocationPoli {
+  id        Int   @id @default(autoincrement())
+  status    Int
+  response  Json
+  request   String
+  url       String
+  poli_id   Int    // Foreign Key
+  poli      Poli   @relation(fields: [poli_id], references: [id]) // Relasi ke Poli
+
+  @@map("log_location_poli")
+}
