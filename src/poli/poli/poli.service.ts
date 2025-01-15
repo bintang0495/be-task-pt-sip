@@ -14,7 +14,7 @@ export class PoliService {
         private readonly configService: ConfigService,
     ){}
 
-    async createPoli(setupData: any) {
+    async createPoli(setupData: any): Promise<any> {
         const token = await this.authService.getAccessToken();
 
         const urlApiSatuSehat = this.configService.get<string>('URL_API_SATUSEHAT_LOCATION');

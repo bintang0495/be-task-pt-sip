@@ -8,20 +8,28 @@ export class PerawatService {
         private readonly prismaService: PrismaService,
     ) {}
 
-    async createPerawat(data: any) {
-        const poliId = data.poli_id;
+    async createPerawat({
+        poli_id,
+        name,
+    }: {
+        poli_id: number,
+        name: string
+    }): Promise<any> {
         const perawat = await this.prismaService.poli.findUnique({
             where: {
-                id: data.poli_id,
+                id: poli_id,
             }
         });
         if (!perawat) {
-            throw new NotFoundException(`Perawat dengan Poli Id ${poliId} tidak ditemukan.`);
+            throw new NotFoundException(`Perawat dengan Poli Id ${poli_id} tidak ditemukan.`);
         }
-        return await this.prismaService.perawat.create({ data });
+        return await this.prismaService.perawat.create({ data: {
+            poli_id,
+            name,
+        } });
     }
 
-    async getAllPerawat(page = 1, count = 10) {
+    async getAllPerawat(page: number = 1, count: number = 10): Promise<any> {
         // Menghitung total data
         const totalCount = await this.prismaService.perawat.count();
 
@@ -33,6 +41,7 @@ export class PerawatService {
                     include: {
                         telecoms: true,
                         identifiers: true,
+                        log_location_poli: true,
                     },
                 },
             },
