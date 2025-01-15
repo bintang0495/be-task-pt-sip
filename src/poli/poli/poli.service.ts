@@ -32,27 +32,29 @@ export class PoliService {
             )
         );
 
+        const responseData = response.data;
+
         // Data untuk tabel Poli
         const poliData = {
-            resource_type: setupData.resourceType,
-            status: setupData.status,
-            name: setupData.name,
-            description: setupData.description,
-            mode: setupData.mode,
-            longitude: setupData.position.longitude,
-            latitude: setupData.position.latitude,
-            altitude: setupData.position.altitude,
-            reference_organization: setupData.managingOrganization?.reference,
-            physical_type: setupData.physicalType,
+            resource_type: responseData.resourceType,
+            status: responseData.status,
+            name: responseData.name,
+            description: responseData.description,
+            mode: responseData.mode,
+            longitude: responseData.position.longitude,
+            latitude: responseData.position.latitude,
+            altitude: responseData.position.altitude,
+            reference_organization: responseData.managingOrganization?.reference,
+            physical_type: responseData.physicalType,
         };
 
-        const telecomData = setupData.telecom.map((item: { system: string; value: string; use: string; }) => ({
+        const telecomData = responseData.telecom.map((item: { system: string; value: string; use: string; }) => ({
             system: item.system,
             value: item.value,
             use: item.use,
         }));
 
-        const identifierData = setupData.identifier.map((item: { system: string; value: string; use: string; }) => ({
+        const identifierData = responseData.identifier.map((item: { system: string; value: string; use: string; }) => ({
             system: item.system,
             value: item.value,
         }));
@@ -89,7 +91,7 @@ export class PoliService {
             const saveLog = prisma.logLocationPoli.create({
                 data: {
                     status: response.status,
-                    response: response.data,
+                    response: responseData,
                     request: response.config.method,
                     url: response.config.url,
                     poli_id: poli.id,

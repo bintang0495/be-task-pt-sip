@@ -1,11 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import { PrismaService } from 'src/common/prisma.service';
 
 @Injectable()
 export class PerawatService {
-    constructor(private readonly prismaService: PrismaService) {}
+    constructor(
+        private readonly prismaService: PrismaService,
+    ) {}
 
     async createPerawat(data: any) {
+        const poliId = data.poli_id;
+        const perawat = await this.prismaService.poli.findUnique({
+            where: {
+                id: data.poli_id,
+            }
+        });
+        if (!perawat) {
+            throw new NotFoundException(`Perawat dengan Poli Id ${poliId} tidak ditemukan.`);
+        }
         return await this.prismaService.perawat.create({ data });
     }
 
